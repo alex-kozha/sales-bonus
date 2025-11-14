@@ -121,6 +121,6 @@ function analyzeSalesData(data, options) {
     profit: Math.round(seller.profit * 100) / 100,
     sales_count: seller.sales_count,
     top_products: seller.top_products,
-    bonus: seller.bonus,
+    bonus: Math.round(seller.bonus * 100) / 100,
   }));
 }
