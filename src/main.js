@@ -7,12 +7,10 @@
 function calculateSimpleRevenue(purchase, _product) {
   // @TODO: Расчет выручки от операции
   let { discount, sale_price, quantity } = purchase;
-  discount = 1 - discount / 100;
-  return sale_price * quantity * discount;
-  //discount = discount / 100; //переводим скидку
+  discount = 1 - purchase.discount / 100;
   //const fulsum = sale_price * quantity; //общая цена всех товаров без скидки
   //const final_sale = fulsum * (1 - discount); //цена продажа со скидкой
-  // return final_sale - _product.purchase_price * quantity; //прибыль
+  return discount - sale_price * quantity; //прибыль
 }
 
 /**
@@ -86,25 +84,27 @@ function analyzeSalesData(data, options) {
     // Чек
     const seller = someIndex[record.seller_id]; // Продавец
     ++seller.sales_count;
+    seller.revenue += record.total_amount;
     record.items.forEach((solit) => {
       const pr = data.products.find((p) => p.sku == solit.sku);
       const money = calculateSimpleRevenue(solit, pr);
-      seller.revenue += money;
+      discount = solit.discount / 100; //переводим скидку
+      const fulsum = solit.sale_price * solit.quantity; //общая цена всех товаров без скидки
+      const final_sale = fulsum * (1 - discount); //цена продажа со скидкой
+      const d = final_sale - pr.purchase_price * solit.quantity; //прибыль
+      seller.profit += d;
       if (!seller.products_sold[solit.sku]) {
         seller.products_sold[solit.sku] = 0;
       }
       seller.products_sold[solit.sku] += solit.quantity;
-      const prs = data.products.find((p) => p.sku == solit.sku);
-      const got = money - prs.purchase_price * solit.quantity; //прибыль
-      seller.profit += got;
     });
 
+    sellerStats.sort((a, b) => b.profit - a.profit);
     seller.bonus = calculateBonusByProfit(
       sellerStats.indexOf(seller),
       sellerStats.length,
       seller
     );
-    sellerStats.sort((a, b) => b.profit - a.profit);
     seller.top_products = Object.entries(seller.products_sold);
 
     seller.top_products = seller.top_products.map((el) => {
@@ -121,6 +121,6 @@ function analyzeSalesData(data, options) {
     profit: Math.round(seller.profit * 100) / 100,
     sales_count: seller.sales_count,
     top_products: seller.top_products,
-    bonus: Math.round(seller.bonus * 100) / 100,
+    bonus: seller.bonus,
   }));
 }
