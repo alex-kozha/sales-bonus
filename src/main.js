@@ -86,20 +86,22 @@ function analyzeSalesData(data, options) {
       }
       seller.products_sold[solit.sku] += solit.quantity;
     });
-  });
-  sellerStats.sort((a, b) => b.profit - a.profit);
-  seller.bonus = calculateBonusByProfit(
-    sellerStats.indexOf(seller),
-    sellerStats.length,
-    seller
-  );
-  seller.top_products = Object.entries(seller.products_sold);
 
-  seller.top_products = seller.top_products.map((el) => {
-    return { sku: el[0], quantity: el[1] };
+    seller.bonus = calculateBonusByProfit(
+      sellerStats.indexOf(seller),
+      sellerStats.length,
+      seller
+    );
+    sellerStats.sort((a, b) => b.profit - a.profit);
+    seller.top_products = Object.entries(seller.products_sold);
+
+    seller.top_products = seller.top_products.map((el) => {
+      return { sku: el[0], quantity: el[1] };
+    });
+    seller.top_products.sort((a, b) => b.quantity - a.quantity);
+    seller.top_products = seller.top_products.slice(0, 10);
   });
-  seller.top_products.sort((a, b) => b.quantity - a.quantity);
-  seller.top_products = seller.top_products.slice(0, 10);
+
   return sellerStats.map((seller) => ({
     seller_id: seller.id,
     name: seller.name,
@@ -107,6 +109,6 @@ function analyzeSalesData(data, options) {
     profit: Math.round(seller.profit * 100) / 100,
     sales_count: seller.sales_count,
     top_products: seller.top_products,
-    bonus: seller.bonus,
+    bonus: Math.round(seller.bonus * 100) / 100,
   }));
 }
