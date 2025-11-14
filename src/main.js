@@ -93,12 +93,8 @@ function analyzeSalesData(data, options) {
       if (!seller.products_sold[solit.sku]) {
         seller.products_sold[solit.sku] = 0;
       }
-      seller.products_sold[solit.sku] += solit.quantity;
-      const prs = data.products.find((p) => p.sku == solit.sku);
-      let discount = solit.discount / 100; //переводим скидку
-      const fulsum = solit.sale_price * solit.quantity; //общая цена всех товаров без скидки
-      const final_sale = fulsum * (1 - discount); //цена продажа со скидкой
-      const got = final_sale - prs.purchase_price * solit.quantity; //прибыль
+
+      const got = money - prs.purchase_price * solit.quantity; //прибыль
       seller.profit += got;
     });
 
