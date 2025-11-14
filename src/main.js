@@ -7,10 +7,12 @@
 function calculateSimpleRevenue(purchase, _product) {
   // @TODO: Расчет выручки от операции
   let { discount, sale_price, quantity } = purchase;
-  discount = discount / 100; //переводим скидку
-  const fulsum = sale_price * quantity; //общая цена всех товаров без скидки
-  const final_sale = fulsum * (1 - discount); //цена продажа со скидкой
-  return final_sale - _product.purchase_price * quantity; //прибыль
+  discount = 1 - purchase.discount / 100;
+  return sale_price * quantity * discount;
+  //discount = discount / 100; //переводим скидку
+  //const fulsum = sale_price * quantity; //общая цена всех товаров без скидки
+  //const final_sale = fulsum * (1 - discount); //цена продажа со скидкой
+  // return final_sale - _product.purchase_price * quantity; //прибыль
 }
 
 /**
@@ -84,15 +86,20 @@ function analyzeSalesData(data, options) {
     // Чек
     const seller = someIndex[record.seller_id]; // Продавец
     ++seller.sales_count;
-    seller.revenue += record.total_amount;
     record.items.forEach((solit) => {
       const pr = data.products.find((p) => p.sku == solit.sku);
       const money = calculateSimpleRevenue(solit, pr);
-      seller.profit += money;
+      seller.revenue += money;
       if (!seller.products_sold[solit.sku]) {
         seller.products_sold[solit.sku] = 0;
       }
       seller.products_sold[solit.sku] += solit.quantity;
+      const prs = data.products.find((p) => p.sku == solit.sku);
+      let discount = solit.discount / 100; //переводим скидку
+      const fulsum = solit.sale_price * solit.quantity; //общая цена всех товаров без скидки
+      const final_sale = fulsum * (1 - discount); //цена продажа со скидкой
+      const got = final_sale - prs.purchase_price * solit.quantity; //прибыль
+      seller.profit += got;
     });
 
     seller.bonus = calculateBonusByProfit(
