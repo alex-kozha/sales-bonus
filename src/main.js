@@ -52,7 +52,9 @@ function analyzeSalesData(data, options) {
   ) {
     throw new Error("Чего-то не хватает");
   }
-
+  if (data.length === 0) {
+    throw new Error("Массив пустой");
+  }
   // @TODO: Проверка наличия опций
 
   // @TODO: Подготовка промежуточных данных для сбора статистики
