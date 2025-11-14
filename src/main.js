@@ -93,7 +93,7 @@ function analyzeSalesData(data, options) {
       if (!seller.products_sold[solit.sku]) {
         seller.products_sold[solit.sku] = 0;
       }
-
+      const prs = data.products.find((p) => p.sku == solit.sku);
       const got = money - prs.purchase_price * solit.quantity; //прибыль
       seller.profit += got;
     });
