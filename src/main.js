@@ -7,7 +7,7 @@
 function calculateSimpleRevenue(purchase, _product) {
   // @TODO: Расчет выручки от операции
   let { discount, sale_price, quantity } = purchase;
-  discount = 1 - purchase.discount / 100;
+  discount = 1 - discount / 100;
   return sale_price * quantity * discount;
   //discount = discount / 100; //переводим скидку
   //const fulsum = sale_price * quantity; //общая цена всех товаров без скидки
