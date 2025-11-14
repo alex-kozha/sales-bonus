@@ -10,7 +10,7 @@ function calculateSimpleRevenue(purchase, _product) {
   discount = 1 - purchase.discount / 100;
   //const fulsum = sale_price * quantity; //общая цена всех товаров без скидки
   //const final_sale = fulsum * (1 - discount); //цена продажа со скидкой
-  return discount - sale_price * quantity; //прибыль
+  return discount * sale_price * quantity; //прибыль
 }
 
 /**
